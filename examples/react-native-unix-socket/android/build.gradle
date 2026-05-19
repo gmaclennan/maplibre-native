@@ -1,0 +1,20 @@
+// Drop these dependencies into your RN app's android/app/build.gradle.
+// The Kotlin sources in this directory expect them to resolve.
+
+dependencies {
+    // React Native (provided by your app's RN install)
+    implementation "com.facebook.react:react-native:+"
+
+    // OkHttp is already a transitive dep of maplibre-react-native, but pin it
+    // here if you need a specific version.
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+
+    // junixsocket — Unix domain sockets on Android (works pre-API 31).
+    // The -native-android artifact ships the prebuilt JNI for arm64/x86_64.
+    implementation "com.kohlschutter.junixsocket:junixsocket-core:2.10.1"
+    implementation "com.kohlschutter.junixsocket:junixsocket-native-android:2.10.1"
+
+    // MapLibre's HttpRequestImpl is provided by maplibre-react-native at
+    // runtime. compileOnly avoids pulling in a second copy.
+    compileOnly "org.maplibre.gl:android-sdk:11.0.0"
+}

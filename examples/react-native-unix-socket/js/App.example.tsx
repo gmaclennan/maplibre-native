@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import MapLibreGL, { MapView, ShapeSource } from '@maplibre/maplibre-react-native';
+import { MapView } from '@maplibre/maplibre-react-native';
 import { configureMapServer } from './mapServer';
+import { startNodeMapServer } from './nodeMapServer'; // your own glue
 
 // The host/port don't matter — our SocketFactory ignores them and always
 // dials the UDS. Pick anything; "127.0.0.1" keeps OkHttp happy.
@@ -12,8 +13,8 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      // Abstract socket — UID-scoped, no filesystem entry.
-      await configureMapServer('@comapeo-map');
+      const socketPath = await configureMapServer('mapserver.sock');
+      await startNodeMapServer(socketPath);
       setReady(true);
     })().catch(console.error);
   }, []);
@@ -24,7 +25,5 @@ export default function App() {
     );
   }
 
-  return (
-    <MapView style={{ flex: 1 }} styleURL={STYLE_URL} />
-  );
+  return <MapView style={{ flex: 1 }} styleURL={STYLE_URL} />;
 }

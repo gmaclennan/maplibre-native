@@ -11,18 +11,16 @@ import javax.net.SocketFactory
  * A SocketFactory that always connects to a single Unix domain socket,
  * regardless of the host/port OkHttp asks for.
  *
- * Pass either a filesystem path ("/data/data/com.comapeo/files/map.sock")
- * or an abstract socket name prefixed with "@" ("@comapeo-map").
- * Abstract sockets are Linux-only and live outside the filesystem, which
- * makes them a good fit for app-scoped IPC on Android.
+ * The path MUST live inside the app's private data directory
+ * (e.g. context.filesDir). That gives two layers of isolation: DAC
+ * (the directory is mode 0700 owned by the app's UID) and SELinux
+ * per-app categories. Abstract sockets are deliberately not supported —
+ * they have no DAC and are reachable by other apps under the default
+ * Android SELinux policy for untrusted_app.
  */
 class UnixDomainSocketFactory(socketPath: String) : SocketFactory() {
 
-    private val address: AFUNIXSocketAddress = if (socketPath.startsWith("@")) {
-        AFUNIXSocketAddress.inAbstractNamespace(socketPath.substring(1))
-    } else {
-        AFUNIXSocketAddress.of(File(socketPath))
-    }
+    private val address: AFUNIXSocketAddress = AFUNIXSocketAddress.of(File(socketPath))
 
     private fun connect(): Socket = AFUNIXSocket.connectTo(address)
 
